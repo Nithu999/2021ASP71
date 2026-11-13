@@ -1,0 +1,12 @@
+# RStudio temporary files
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+
+# Raw datasets
+data/raw/*
+
+# Temporary files
+*.tmp
+*.log
