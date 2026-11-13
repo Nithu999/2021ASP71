@@ -10,3 +10,6 @@ data/raw/*
 # Temporary files
 *.tmp
 *.log
+
+# Downloaded GEO metadata
+references/*.soft.gz
