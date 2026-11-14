@@ -1,8 +1,8 @@
 # CropStress Intelligence
 
-## Agricultural Genomics Platform
+### Agricultural Genomics Platform
 
-### Project Overview
+## Project Overview
 
 CropStress Intelligence is an agricultural genomics project focused on analysing gene-expression patterns associated with crop stress responses.
 
@@ -10,34 +10,83 @@ This project uses publicly available rice RNA-sequencing data to investigate gen
 
 The long-term vision is to develop a research-support platform that helps agricultural researchers explore crop stress responses using genomic data.
 
-### Research Dataset
+## Research Dataset
 
 - **Source:** NCBI Gene Expression Omnibus (GEO)
 - **Dataset:** GSE288615
-- **Organism:** Rice (*Oryza sativa*)
+- **Organism:** Rice (_Oryza sativa_)
 - **Cultivar:** IR64
 - **Technology:** RNA sequencing (RNA-seq)
 - **Samples:** 72
+- **Expression records:** 55,986
+- **Reference genome:** IRGSP-1.0
 
-### Technologies
+## Technologies
 
 - R
 - RStudio
-- ggplot2
 - Git and GitHub
+- R Markdown
+- ggplot2 (planned, if used in subsequent analyses)
 
-### Current Progress
+## Current Progress
 
-- Public dataset selected and imported.
-- Initial dataset inspection completed.
-- Missing-value and count validation performed.
-- Sample library sizes calculated.
-- Potential low-quality sample identified.
-- Initial library-size visualisation generated.
-- Gene identifier availability under investigation.
+### Dataset Preparation
 
-### Project Status
+- Public GEO dataset selected and imported.
+- GEO sample metadata extracted and integrated.
+- Sample identifiers validated against the count matrix.
+- Initial count-matrix validation completed.
 
-Currently in the exploratory data analysis and data-validation stage.
+### Quality Assessment
 
-Differential expression analysis will begin after verifying gene identifiers and experimental sample metadata.
+- Sample-level library sizes calculated.
+- Number of detected expression records calculated.
+- Library-size distribution visualised.
+- Potential low-count sample identified: `IR9AD2L1`.
+- Biological replicate comparison performed.
+- Relative library size investigated.
+- Count distribution investigated.
+- Potential sample-level count anomaly documented.
+
+### Research Documentation
+
+- Initial dataset metadata documentation prepared.
+- R Markdown report created.
+- Quality-control tables and visualisations generated.
+
+**Important:** The identified sample has not been excluded. Further investigation is required before making any exclusion decision.
+
+## Project Structure
+
+```text
+CropStress_Intelligence/
+│
+├── code/
+├── data/
+│   ├── raw/
+│   └── processed/
+│
+├── references/
+├── reports/
+│
+└── results/
+    ├── figures/
+    └── tables/
+```
+
+## Project Status
+
+Currently in the dataset validation and initial RNA-seq quality assessment stage.
+
+The next stages will focus on:
+
+1. Investigating potential sample-quality issues.
+2. Validating gene identifiers.
+3. Performing exploratory data analysis.
+4. Applying appropriate normalization and filtering.
+5. Preparing for differential gene-expression analysis.
+
+## Long-Term Vision
+
+Develop CropStress Intelligence into a research-support platform for agricultural genomics, with potential applications in crop stress analysis and agricultural decision support.

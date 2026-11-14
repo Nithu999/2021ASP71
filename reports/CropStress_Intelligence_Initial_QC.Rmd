@@ -1,0 +1,605 @@
+---
+title: "CropStress Intelligence: Dataset Validation and Initial RNA-seq Quality Assessment"
+author: "CropStress Intelligence Project"
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 9,
+  fig.height = 5,
+  fig.align = "center"
+)
+
+# This report is stored in reports/.
+# Use the project root as the working directory for all relative paths.
+knitr::opts_knit$set(root.dir = "..")
+```
+
+# Project overview
+
+CropStress Intelligence investigates rice (*Oryza sativa*) gene-expression patterns associated with drought stress and subsequent recovery.
+
+This report documents dataset preparation, validation, and initial sample-level RNA-seq quality assessment using the locally stored GEO count matrix and integrated sample annotations.
+
+## Dataset information
+
+| Attribute | Description |
+|:--|:--|
+| GEO accession | GSE288615 |
+| Organism | *Oryza sativa* |
+| Cultivar | IR64 |
+| Data type | RNA-seq raw gene-expression counts |
+| Expected samples | 72 |
+| Expected expression records | 55,986 |
+| Reference genome reported in project metadata | IRGSP-1.0 |
+
+The dataset metadata describes an experiment involving drought treatment and subsequent rehydration, with multiple collection time points and leaf positions.
+
+# 1. Set project paths
+
+Open `CropStress_Intelligence.Rproj` in RStudio. This report is intended to be stored in `reports/` and knitted from the project.
+
+```{r paths}
+counts_file <- file.path(
+  "data", "raw",
+  "GSE288615_rawCounts_IR64_rehydration_All_samples.txt"
+)
+
+metadata_file <- file.path(
+  "results", "tables",
+  "integrated_sample_metadata.csv"
+)
+
+figures_dir <- file.path("results", "figures")
+tables_dir  <- file.path("results", "tables")
+
+if (!dir.exists(figures_dir)) {
+  dir.create(figures_dir, recursive = TRUE)
+}
+
+if (!dir.exists(tables_dir)) {
+  dir.create(tables_dir, recursive = TRUE)
+}
+
+stopifnot(file.exists(counts_file))
+stopifnot(file.exists(metadata_file))
+
+cat("Count matrix:", counts_file, "\n")
+cat("Sample metadata:", metadata_file, "\n")
+```
+
+# 2. Import the count matrix and sample metadata
+
+The count matrix is read without changing sample column names so that library identifiers can be matched exactly with the metadata.
+
+```{r import-data}
+counts <- read.delim(
+  counts_file,
+  header = TRUE,
+  check.names = FALSE
+)
+
+sample_metadata <- read.csv(
+  metadata_file,
+  stringsAsFactors = FALSE,
+  check.names = FALSE
+)
+
+cat("Count matrix dimensions:\n")
+print(dim(counts))
+
+cat("\nSample metadata dimensions:\n")
+print(dim(sample_metadata))
+
+cat("\nFirst six count-matrix rows:\n")
+head(counts)
+
+cat("\nFirst six metadata rows:\n")
+head(sample_metadata)
+```
+
+# 3. Validate the imported data
+
+## 3.1 Check count-column types
+
+The expression columns are expected to contain numeric raw counts. The first column may contain feature identifiers and is not included in the numeric count matrix.
+
+```{r column-validation}
+stopifnot("library_name" %in% names(sample_metadata))
+
+sample_ids_from_metadata <- sample_metadata$library_name
+
+count_columns <- setdiff(
+  names(counts),
+  names(counts)[1]
+)
+
+# Identify sample columns by matching metadata library names.
+missing_count_columns <- setdiff(
+  sample_ids_from_metadata,
+  names(counts)
+)
+
+cat("Metadata samples missing from count matrix:\n")
+print(missing_count_columns)
+
+stopifnot(length(missing_count_columns) == 0)
+
+count_matrix <- as.matrix(
+  counts[, sample_ids_from_metadata, drop = FALSE]
+)
+
+storage.mode(count_matrix) <- "numeric"
+
+cat("All count-matrix values numeric:",
+    is.numeric(count_matrix), "\n")
+```
+
+## 3.2 Check missing and negative values
+
+```{r value-validation}
+total_missing <- sum(is.na(count_matrix))
+total_negative <- sum(count_matrix < 0, na.rm = TRUE)
+
+cat("Missing count values:", total_missing, "\n")
+cat("Negative count values:", total_negative, "\n")
+
+stopifnot(total_missing == 0)
+stopifnot(total_negative == 0)
+```
+
+## 3.3 Check sample identifiers and ordering
+
+```{r sample-id-validation}
+metadata_sample_ids <- sample_metadata$library_name
+count_sample_ids <- colnames(count_matrix)
+
+cat("Samples in count matrix:", length(count_sample_ids), "\n")
+cat("Samples in metadata:", length(metadata_sample_ids), "\n")
+
+cat(
+  "Both sources contain the same sample identifiers:",
+  setequal(metadata_sample_ids, count_sample_ids),
+  "\n"
+)
+
+cat(
+  "Sample order is identical:",
+  identical(metadata_sample_ids, count_sample_ids),
+  "\n"
+)
+
+stopifnot(setequal(metadata_sample_ids, count_sample_ids))
+
+sample_metadata <- sample_metadata[
+  match(count_sample_ids, sample_metadata$library_name),
+  ,
+  drop = FALSE
+]
+
+stopifnot(
+  identical(sample_metadata$library_name, count_sample_ids)
+)
+```
+
+# 4. Review the experimental design
+
+```{r experimental-design}
+cat("Metadata columns:\n")
+print(names(sample_metadata))
+
+for (field in intersect(
+  c("cultivar", "tissue", "treatment", "day", "replicate"),
+  names(sample_metadata)
+)) {
+  cat("\n", field, ":\n", sep = "")
+  print(unique(sample_metadata[[field]]))
+}
+```
+
+## 4.1 Sample counts by treatment
+
+```{r treatment-counts}
+if ("treatment" %in% names(sample_metadata)) {
+  print(table(sample_metadata$treatment))
+}
+```
+
+## 4.2 Sample counts by treatment, time point and tissue
+
+```{r group-distribution}
+required_design_fields <- c("treatment", "day", "tissue")
+
+if (all(required_design_fields %in% names(sample_metadata))) {
+  group_distribution <- xtabs(
+    ~ treatment + day + tissue,
+    data = sample_metadata
+  )
+
+  print(group_distribution)
+}
+```
+
+# 5. Calculate sample-level quality metrics
+
+Library size is the sum of raw counts across expression records for a sample. Detected records are rows with a count greater than zero. These are descriptive metrics and do not independently establish whether a sample is biologically or technically valid.
+
+```{r calculate-qc}
+library_sizes <- colSums(count_matrix)
+detected_records <- colSums(count_matrix > 0)
+
+sample_qc <- data.frame(
+  library_name = names(library_sizes),
+  library_size = as.numeric(library_sizes),
+  detected_records = as.numeric(detected_records),
+  stringsAsFactors = FALSE
+)
+
+sample_qc <- merge(
+  sample_metadata,
+  sample_qc,
+  by = "library_name",
+  sort = FALSE
+)
+
+sample_qc <- sample_qc[
+  match(count_sample_ids, sample_qc$library_name),
+  ,
+  drop = FALSE
+]
+
+stopifnot(identical(sample_qc$library_name, count_sample_ids))
+
+head(sample_qc)
+```
+
+## 5.1 Summary statistics
+
+```{r qc-statistics}
+summary(sample_qc$library_size)
+summary(sample_qc$detected_records)
+```
+
+# 6. Visualise sample quality metrics
+
+## 6.1 Library-size distribution
+
+```{r library-size-plot, fig.cap="Total raw counts (library size) for each sample."}
+old_par <- par(no.readonly = TRUE)
+par(mar = c(8, 5, 3, 1))
+
+barplot(
+  sample_qc$library_size,
+  names.arg = sample_qc$library_name,
+  las = 2,
+  cex.names = 0.55,
+  ylab = "Total raw counts",
+  main = "RNA-seq library size by sample"
+)
+
+par(old_par)
+
+png(
+  filename = file.path(figures_dir, "library_size_distribution.png"),
+  width = 1400,
+  height = 800,
+  res = 130
+)
+
+par(mar = c(8, 5, 3, 1))
+barplot(
+  sample_qc$library_size,
+  names.arg = sample_qc$library_name,
+  las = 2,
+  cex.names = 0.55,
+  ylab = "Total raw counts",
+  main = "RNA-seq library size by sample"
+)
+dev.off()
+```
+
+## 6.2 Detected expression records per sample
+
+```{r detected-records-plot, fig.cap="Number of expression records with non-zero counts in each sample."}
+old_par <- par(no.readonly = TRUE)
+par(mar = c(8, 5, 3, 1))
+
+barplot(
+  sample_qc$detected_records,
+  names.arg = sample_qc$library_name,
+  las = 2,
+  cex.names = 0.55,
+  ylab = "Detected expression records",
+  main = "Detected expression records by sample"
+)
+
+par(old_par)
+
+png(
+  filename = file.path(figures_dir, "detected_records_by_sample.png"),
+  width = 1400,
+  height = 800,
+  res = 130
+)
+
+par(mar = c(8, 5, 3, 1))
+barplot(
+  sample_qc$detected_records,
+  names.arg = sample_qc$library_name,
+  las = 2,
+  cex.names = 0.55,
+  ylab = "Detected expression records",
+  main = "Detected expression records by sample"
+)
+dev.off()
+```
+
+# 7. Investigate the flagged sample
+
+The sample `IR9AD2L1` was identified during initial quality assessment as having an unusually low library size and few detected expression records. The following code verifies its metrics against the imported count matrix. It does not remove the sample.
+
+```{r flagged-sample}
+flagged_sample <- "IR9AD2L1"
+
+stopifnot(flagged_sample %in% colnames(count_matrix))
+
+flagged_metrics <- sample_qc[
+  sample_qc$library_name == flagged_sample,
+  c("library_name", "library_size", "detected_records"),
+  drop = FALSE
+]
+
+print(flagged_metrics)
+```
+
+## 7.1 Relative library size
+
+The relative library size is calculated as the target sample's library size divided by the median library size across all samples, multiplied by 100.
+
+```{r relative-library-size}
+median_library_size <- median(sample_qc$library_size)
+
+target_library_size <- sample_qc$library_size[
+  sample_qc$library_name == flagged_sample
+]
+
+relative_library_size <- (
+  target_library_size / median_library_size
+) * 100
+
+fold_difference <- median_library_size / target_library_size
+
+cat("Target sample library size:", target_library_size, "\n")
+cat("Median library size:", median_library_size, "\n")
+cat(
+  "Target sample relative to median (%):",
+  round(relative_library_size, 4),
+  "%\n"
+)
+cat(
+  "Median library size is",
+  round(fold_difference, 2),
+  "times larger than target sample.\n"
+)
+```
+
+## 7.2 Count distribution of the flagged sample
+
+```{r flagged-count-distribution}
+target_counts <- count_matrix[, flagged_sample]
+
+zero_counts <- sum(target_counts == 0)
+nonzero_counts <- sum(target_counts > 0)
+total_records <- length(target_counts)
+
+target_count_summary <- data.frame(
+  library_name = flagged_sample,
+  total_records = total_records,
+  total_counts = sum(target_counts),
+  zero_records = zero_counts,
+  nonzero_records = nonzero_counts,
+  zero_percentage = (zero_counts / total_records) * 100,
+  nonzero_percentage = (nonzero_counts / total_records) * 100,
+  maximum_count = max(target_counts),
+  mean_count = mean(target_counts)
+)
+
+print(summary(target_counts))
+print(target_count_summary)
+
+cat("\nTop 10 counts:\n")
+print(head(sort(target_counts, decreasing = TRUE), 10))
+```
+
+# 8. Compare biological replicates
+
+The flagged sample belongs to the following experimental group, according to the integrated metadata:
+
+- Cultivar: IR64
+- Tissue: latest leaf
+- Treatment: severe drought
+- Collection day: 9
+
+The comparison below selects samples sharing the same treatment, day and tissue as the flagged sample.
+
+```{r identify-replicates}
+target_metadata <- sample_metadata[
+  sample_metadata$library_name == flagged_sample,
+  ,
+  drop = FALSE
+]
+
+stopifnot(nrow(target_metadata) == 1)
+
+same_group <- sample_metadata[
+  sample_metadata$treatment == target_metadata$treatment &
+    sample_metadata$day == target_metadata$day &
+    sample_metadata$tissue == target_metadata$tissue,
+  ,
+  drop = FALSE
+]
+
+cat("Samples in the same experimental group:\n")
+print(same_group)
+```
+
+## 8.1 Replicate count-distribution metrics
+
+```{r replicate-distribution}
+replicate_samples <- same_group$library_name
+
+replicate_distribution <- data.frame(
+  library_name = replicate_samples,
+  total_counts = NA_real_,
+  zero_records = NA_integer_,
+  nonzero_records = NA_integer_,
+  zero_percentage = NA_real_,
+  maximum_count = NA_real_,
+  mean_count = NA_real_,
+  stringsAsFactors = FALSE
+)
+
+for (i in seq_along(replicate_samples)) {
+  sample_name <- replicate_samples[i]
+  current_counts <- count_matrix[, sample_name]
+
+  replicate_distribution$total_counts[i] <- sum(current_counts)
+  replicate_distribution$zero_records[i] <- sum(current_counts == 0)
+  replicate_distribution$nonzero_records[i] <- sum(current_counts > 0)
+  replicate_distribution$zero_percentage[i] <-
+    mean(current_counts == 0) * 100
+  replicate_distribution$maximum_count[i] <- max(current_counts)
+  replicate_distribution$mean_count[i] <- mean(current_counts)
+}
+
+print(replicate_distribution)
+```
+
+## 8.2 Visualise biological replicate library sizes
+
+```{r replicate-library-plot, fig.cap="Library-size comparison among biological replicates from severe drought, Day 9, latest leaf."}
+barplot(
+  height = replicate_distribution$total_counts,
+  names.arg = replicate_distribution$library_name,
+  las = 2,
+  ylab = "Total raw counts",
+  main = "Library Size: Severe Drought, Day 9, Latest Leaf"
+)
+
+png(
+  filename = file.path(
+    figures_dir,
+    "severe_drought_day9_replicates.png"
+  ),
+  width = 1200,
+  height = 800,
+  res = 120
+)
+
+barplot(
+  height = replicate_distribution$total_counts,
+  names.arg = replicate_distribution$library_name,
+  las = 2,
+  ylab = "Total raw counts",
+  main = "Library Size: Severe Drought, Day 9, Latest Leaf"
+)
+
+dev.off()
+```
+
+## 8.3 Save replicate comparison table
+
+```{r save-replicate-distribution}
+replicate_output_file <- file.path(
+  tables_dir,
+  "replicate_count_distribution.csv"
+)
+
+write.csv(
+  replicate_distribution,
+  file = replicate_output_file,
+  row.names = FALSE
+)
+
+cat("Replicate distribution saved:",
+    file.exists(replicate_output_file), "\n")
+cat("Output:", replicate_output_file, "\n")
+```
+
+# 9. Save quality-control tables
+
+```{r save-qc-tables}
+qc_output_file <- file.path(
+  tables_dir,
+  "initial_sample_qc_summary.csv"
+)
+
+write.csv(
+  sample_qc,
+  file = qc_output_file,
+  row.names = FALSE
+)
+
+cat("Initial QC summary saved:",
+    file.exists(qc_output_file), "\n")
+cat("Output:", qc_output_file, "\n")
+
+cat("\nQC summary dimensions:\n")
+print(dim(sample_qc))
+```
+
+# 10. Findings and scientific interpretation
+
+The analysis identified `IR9AD2L1` as an extreme sample-level count anomaly in the current count matrix.
+
+The observed values from the current analysis are:
+
+| Metric | IR9AD2L1 |
+|:--|--:|
+| Library size | 1,755 |
+| Detected expression records | 1,046 |
+| Zero-count records | 54,940 |
+| Total expression records | 55,986 |
+| Zero-count percentage | 98.13% |
+| Non-zero percentage | 1.87% |
+| Maximum count | 19 |
+
+The sample belongs to the severe drought, Day 9, latest-leaf group. Its two other biological replicates have substantially larger library sizes in the current count matrix.
+
+These observations support flagging `IR9AD2L1` for further investigation. They do not establish the cause of the anomaly. The count matrix alone cannot confirm sequencing failure, RNA degradation, library-preparation failure, or sample-mapping error.
+
+**No sample is excluded in this report.** Any exclusion decision must be supported by further evidence, documented rationale, and consideration of the effect on downstream analysis.
+
+The term “detected expression records” refers to rows with non-zero counts. These rows should not be described as uniquely identified genes until the count-matrix feature identifiers have been validated.
+
+# 11. Limitations and next analysis steps
+
+The next stages should include:
+
+- Inspect count-matrix row identifiers and establish whether they represent genes, transcripts, or another feature type.
+- Investigate the flagged sample using original study documentation and sequencing-quality information, if available.
+- Examine sample relationships using suitable exploratory analyses, such as PCA and sample-distance clustering, after selecting an appropriate transformation.
+- Determine filtering and normalization methods based on the dataset structure and intended differential-expression analysis.
+- Preserve the raw count matrix and document every preprocessing decision.
+
+Differential expression analysis is not performed in this report.
+
+# 12. Reproducibility information
+
+```{r reproducibility}
+cat("R version:\n")
+print(R.version.string)
+
+cat("\nSession information:\n")
+sessionInfo()
+```
