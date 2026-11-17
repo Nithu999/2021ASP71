@@ -1,0 +1,377 @@
+---
+title: "CropStress Intelligence: RNA-seq Analysis of Rice Responses to Drought Stress and Rehydration"
+author: "CropStress Intelligence Project"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    code_folding: hide
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.align = "center",
+  out.width = "90%"
+)
+
+# The R Markdown file is stored in reports/.
+# Set the project root as the working directory for all relative paths.
+knitr::opts_knit$set(root.dir = "..")
+
+required_packages <- c("knitr", "ggplot2", "DESeq2")
+missing_packages <- required_packages[
+  !vapply(required_packages, requireNamespace, logical(1), quietly = TRUE)
+]
+
+if (length(missing_packages) > 0) {
+  stop(
+    "Install these packages before knitting: ",
+    paste(missing_packages, collapse = ", ")
+  )
+}
+
+library(knitr)
+library(ggplot2)
+
+project_root <- normalizePath(".", winslash = "/", mustWork = TRUE)
+
+show_if_exists <- function(path, caption = NULL) {
+  if (file.exists(path)) {
+    knitr::include_graphics(path)
+  } else {
+    cat(
+      "**Figure not found:** `", path,
+      "`. Confirm that the analysis output exists in the project folder.",
+      sep = ""
+    )
+  }
+}
+
+read_csv_if_exists <- function(path) {
+  if (file.exists(path)) {
+    read.csv(path, stringsAsFactors = FALSE, check.names = FALSE)
+  } else {
+    warning("Expected result file not found: ", path)
+    NULL
+  }
+}
+```
+
+# Abstract
+
+CropStress Intelligence is a bioinformatics project investigating rice (*Oryza sativa*) expression patterns associated with severe drought stress and subsequent rehydration. The analysis uses publicly available RNA-sequencing count data for the IR64 cultivar from NCBI Gene Expression Omnibus dataset GSE288615. The dataset contains 72 samples and 55,986 original expression records. The workflow includes metadata integration, sample-level quality assessment, expression filtering, exploratory analysis, principal component analysis (PCA), hierarchical sample-distance clustering and differential expression analysis using DESeq2. After preliminary filtering, 21,910 expression records were retained. Eight differential-expression comparisons were conducted across two leaf tissues and four experimental conditions. A low-count sample was investigated through a separate sensitivity analysis. The original count matrix did not provide a validated biological identifier column; therefore, statistical results are reported at the technical feature level and gene-specific biological conclusions are restricted.
+
+# 1. Introduction
+
+Rice is an important food crop, and drought is an environmental stress that can affect plant growth and productivity. Understanding expression responses during drought and subsequent recovery can contribute to agricultural and plant-science research.
+
+RNA sequencing (RNA-seq) provides count-based measurements that can be analysed to compare expression patterns across experimental conditions. This project applies a reproducible R workflow to public rice RNA-seq data, with an emphasis on data validation, quality assessment, exploratory analysis and statistical differential-expression testing.
+
+## 1.1 Aim
+
+To analyse public rice RNA-seq expression data and investigate expression-feature changes associated with drought stress and rehydration using reproducible bioinformatics methods in R.
+
+## 1.2 Objectives
+
+1. Obtain and inspect a public rice RNA-seq dataset.
+2. Extract and integrate sample metadata with the expression matrix.
+3. Perform sample-level quality control and expression-data validation.
+4. Conduct exploratory analysis, including PCA and sample-distance clustering.
+5. Apply preliminary expression filtering.
+6. Investigate the availability and compatibility of biological feature identifiers.
+7. Perform differential expression analysis using DESeq2.
+8. Investigate the influence of an unusually low-count sample.
+9. Document the workflow, results and limitations for reproducibility.
+
+# 2. Dataset Description
+
+The project uses dataset GSE288615 from the NCBI Gene Expression Omnibus (GEO).
+
+| Attribute | Description |
+|---|---|
+| GEO accession | GSE288615 |
+| Organism | Rice (*Oryza sativa*) |
+| Cultivar | IR64 |
+| Data type | RNA-seq raw expression counts |
+| Number of samples | 72 |
+| Original expression records | 55,986 |
+| Reference genome reported by the study | IRGSP-1.0 |
+| Analysis environment | R 4.6.2 |
+
+The dataset includes control, severe-drought and rehydration conditions at multiple time points. Samples represent two leaf positions: latest leaf and second latest leaf. The integrated metadata records sample/library identifiers, treatment, day, tissue and replicate information.
+
+# 3. Methods
+
+## 3.1 Data import and metadata integration
+
+The raw expression count matrix and GEO sample metadata were imported into R. Sample identifiers were checked and metadata were aligned with the count-matrix columns before downstream analysis.
+
+The original matrix contained 55,986 expression records across 72 samples. The matrix dimensions, numeric count values and sample correspondence were examined during preprocessing.
+
+## 3.2 Sample-level quality control
+
+Quality assessment included total library-size calculations, detected-record counts, count-distribution inspection and biological replicate comparisons.
+
+One sample, `IR9AD2L1`, was flagged for unusually low counts:
+
+| Metric | Value |
+|---|---:|
+| Library size | 1,755 |
+| Detected records | 1,046 |
+| Zero-count percentage | 98.13% |
+| Non-zero percentage | 1.87% |
+| Maximum count | 19 |
+
+The sample belongs to the severe-drought Day 9 latest-leaf group. It was flagged for investigation and was not automatically removed from the primary analysis. The count matrix alone does not establish the cause of the unusual observation.
+
+### 3.2.1 Initial quality-control visualisations
+
+```{r qc-figures, echo=FALSE}
+show_if_exists("results/figures/library_size_distribution.png")
+show_if_exists("results/figures/detected_records_by_sample.png")
+show_if_exists("results/figures/severe_drought_day9_replicates.png")
+```
+
+## 3.3 Expression filtering
+
+A preliminary expression filter retained records with a raw count of at least 10 in at least three samples.
+
+| Metric | Result |
+|---|---:|
+| Original records | 55,986 |
+| Retained records | 21,910 |
+| Removed records | 34,076 |
+| Retention percentage | 39.13% |
+| Samples removed at this stage | 0 |
+
+The filtered matrix contained 21,910 records across 72 samples.
+
+## 3.4 Exploratory data analysis: PCA and sample clustering
+
+Variance-stabilising transformation was applied before PCA and sample-distance analysis. PCA was used to summarise major sources of variation among samples. A sample-distance matrix and heatmap were generated to explore similarities and differences among samples.
+
+PCA and clustering are exploratory methods. The plots should be interpreted in relation to treatment, time point and tissue, and should not be treated as proof of a biological mechanism.
+
+### 3.4.1 Principal component analysis
+
+```{r pca-figure, echo=FALSE}
+show_if_exists("results/figures/clustering/PCA_samples.png")
+```
+
+The PCA plot displays sample positions on the first two principal components. The proportion of variance explained by each component is shown on the axes of the generated figure. Interpretation should be based on the observed separation or overlap of samples in the plot.
+
+PCA coordinates, when available, are stored in `results/tables/clustering/PCA_coordinates.csv`.
+
+### 3.4.2 Hierarchical sample-distance clustering
+
+```{r clustering-figure, echo=FALSE}
+show_if_exists("results/figures/clustering/sample_distance_heatmap.png")
+```
+
+The sample-distance heatmap provides an exploratory view of pairwise distances among samples. Samples with smaller distances have more similar transformed expression profiles than samples with larger distances. The heatmap should be inspected for patterns associated with treatment, time point, tissue and the flagged low-count sample.
+
+The distance matrix is stored in `results/tables/clustering/sample_distance_matrix.csv`.
+
+## 3.5 Biological identifier investigation
+
+The original count matrix did not contain an explicit biological gene-identifier column. The available annotation resources were investigated, but the complete row-level mapping between the count matrix and biological gene identifiers could not be verified.
+
+The study metadata reports use of the IRGSP-1.0 reference genome, while the separately examined GFF3 annotation represents MSU7. A matching number of records does not establish a row-by-row mapping. Therefore, technical feature identifiers were retained for analysis, and biological gene identities were not inferred from row order.
+
+This limitation affects gene-level interpretation and functional enrichment analysis, but it does not by itself invalidate the statistical comparison of count-matrix rows.
+
+## 3.6 Differential expression analysis using DESeq2
+
+Differential expression analysis was conducted using the DESeq2 package. The analysis was performed separately for each experimental comparison and tissue.
+
+The documented analysis settings included:
+
+- Design formula: `~ condition`
+- Size-factor estimation: `poscounts`
+- Statistical significance threshold: adjusted p-value (FDR) < 0.05
+- Additional effect-size threshold: absolute log2 fold change >= 1
+
+Eight comparisons were conducted: severe drought Day 6, severe drought Day 9, rehydration Day 3 and rehydration Day 6, each assessed in latest-leaf and second-latest-leaf tissue.
+
+# 4. Results
+
+## 4.1 Differential expression results
+
+The following table summarises the eight primary DESeq2 comparisons.
+
+| Comparison | Tissue | Significant features (FDR < 0.05) | FDR < 0.05 and abs(log2FC) >= 1 |
+|---|---|---:|---:|
+| Severe drought Day 6 | Latest leaf | 2,183 | 609 |
+| Severe drought Day 9 | Latest leaf | 37 | 37 |
+| Rehydration Day 3 | Latest leaf | 1 | 1 |
+| Rehydration Day 6 | Latest leaf | 60 | 39 |
+| Severe drought Day 6 | Second latest leaf | 811 | 447 |
+| Severe drought Day 9 | Second latest leaf | 1,099 | 568 |
+| Rehydration Day 3 | Second latest leaf | 7 | 6 |
+| Rehydration Day 6 | Second latest leaf | 821 | 299 |
+
+These counts describe statistically significant expression features, not confirmed biological genes. The number of significant features differed across conditions and leaf tissues.
+
+The detailed comparison summary is expected at `results/tables/differential_expression/DESeq2_analysis_summary.csv`.
+
+```{r deseq-summary, echo=FALSE}
+de_summary <- read_csv_if_exists(
+  "results/tables/differential_expression/DESeq2_analysis_summary.csv"
+)
+
+if (!is.null(de_summary)) {
+  knitr::kable(
+    de_summary,
+    caption = "Saved DESeq2 comparison summary"
+  )
+}
+```
+
+## 4.2 Differential-expression visualisations
+
+MA plots and volcano plots were generated for the eight comparisons. These figures provide visual summaries of estimated expression changes and adjusted statistical significance.
+
+```{r deseq-figures, echo=FALSE}
+show_if_exists(
+  "results/figures/differential_expression/severe_drought__day_6__latest_leaf_volcano.png"
+)
+show_if_exists(
+  "results/figures/differential_expression/severe_drought__day_6__latest_leaf_MA.png"
+)
+show_if_exists(
+  "results/figures/differential_expression/severe_drought__day_9__latest_leaf_volcano.png"
+)
+show_if_exists(
+  "results/figures/differential_expression/severe_drought__day_9__latest_leaf_MA.png"
+)
+```
+
+All generated differential-expression figures are organised under `results/figures/differential_expression/`.
+
+## 4.3 Investigation of missing adjusted p-values
+
+Some differential-expression result files contained missing adjusted p-values. A diagnostic analysis investigated DESeq2 independent filtering and Cook's distance handling. The diagnostic work was kept separate from the primary analysis, and the original DESeq2 settings and primary results were preserved.
+
+Independent filtering accounted for many missing adjusted p-values in the investigated comparisons. Missing adjusted p-values should not be interpreted as evidence of no biological effect.
+
+## 4.4 Outlier sensitivity analysis
+
+The low-count sample `IR9AD2L1` was investigated separately for the severe-drought Day 9 latest-leaf comparison.
+
+| Metric | Original analysis | Without flagged sample |
+|---|---:|---:|
+| Total samples | 6 | 5 |
+| Control samples | 3 | 3 |
+| Treatment samples | 3 | 2 |
+| Features tested | 18,700 | 18,700 |
+| Significant features | 37 | 1,014 |
+
+The significant-feature overlap was:
+
+| Result | Number |
+|---|---:|
+| Significant in original analysis | 37 |
+| Significant without flagged sample | 1,014 |
+| Significant in both analyses | 37 |
+| Only significant in original analysis | 0 |
+| Only significant without flagged sample | 977 |
+
+All 37 features significant in the original analysis remained significant in the sensitivity analysis. However, removing the sample reduced the treatment group to two replicates. The additional findings are exploratory and should not be considered independently confirmed. The original analysis containing all six samples remains the primary analysis.
+
+# 5. Discussion
+
+The project demonstrates a workflow progressing from public RNA-seq data acquisition and sample metadata integration through quality assessment, filtering, exploratory analysis and statistical differential-expression testing.
+
+The eight comparisons showed variation in the number of significant expression features across drought and rehydration conditions and between the two leaf positions. These differences provide a basis for further investigation of expression responses across experimental conditions. However, because biological gene identifiers could not be fully validated, the current findings should remain at the technical feature level.
+
+The PCA and sample-distance analyses provide complementary exploratory views of sample-level expression variation. Their interpretation should be based on the actual generated plots. No specific treatment-driven separation or clustering pattern should be claimed unless it is visibly supported by those figures.
+
+The low-count sample investigation highlights the importance of sample quality assessment. The sensitivity analysis showed that the severe-drought Day 9 latest-leaf comparison was affected by the flagged sample. Nevertheless, excluding it reduced the treatment group to two replicates, so the original analysis remains the primary result.
+
+# 6. Limitations
+
+1. The complete mapping between original expression records and biological gene identifiers has not been validated.
+2. The investigated MSU7 annotation cannot be assumed to match the IRGSP-1.0 reference used for the count-generation workflow.
+3. Differential-expression results are reported using technical feature identifiers.
+4. The unusually low-count sample affects the severe-drought Day 9 latest-leaf comparison.
+5. The sensitivity analysis has only two treatment replicates after exclusion of the flagged sample.
+6. Some adjusted p-values are missing due to DESeq2 filtering and outlier handling.
+7. Gene-specific biological interpretation and functional enrichment require validated identifiers.
+8. PCA and clustering are exploratory and do not independently establish causal biological relationships.
+
+# 7. Conclusion
+
+CropStress Intelligence developed an R-based workflow for analysing rice RNA-seq data associated with drought stress and rehydration. The project integrated 72 samples, assessed the original expression matrix, retained 21,910 records after preliminary filtering, performed exploratory PCA and sample-distance clustering, and conducted eight DESeq2 comparisons.
+
+The analysis identified statistically significant expression features across several experimental conditions and demonstrated the importance of investigating unusual samples through sensitivity analysis rather than automatically removing them. The main remaining challenge is validating the complete biological gene-identifier mapping. This is necessary before making gene-specific biological claims or conducting reliable gene-level functional interpretation.
+
+# 8. Reproducibility
+
+The project was developed using R 4.6.2, RStudio, Git and GitHub. The repository organises analysis scripts, input data, references, reports, tables and figures into separate folders.
+
+Expected project structure:
+
+```text
+CropStress_Intelligence/
+├── code/
+│   ├── 00_run_all.R
+│   ├── 01_extract_metadata.R
+│   ├── 02_import_counts.R
+│   ├── 03_integrate_metadata.R
+│   ├── 04_sample_quality_control.R
+│   ├── 05_gene_identifier_inspection.R
+│   ├── 18_data_cleaning_preprocessing.R
+│   ├── 19_deseq2_differential_expression.R
+│   ├── 20_validate_differential_expression.R
+│   └── 21_outlier_sensitivity_analysis.R
+├── data/
+│   ├── raw/
+│   └── processed/
+├── references/
+├── reports/
+│   ├── CropStress_Intelligence_Complete_Analysis.Rmd
+│   └── CropStress_Intelligence_Complete_Analysis.html
+└── results/
+    ├── figures/
+    │   ├── clustering/
+    │   └── differential_expression/
+    ├── tables/
+    │   ├── clustering/
+    │   └── differential_expression/
+    └── differential_expression/
+```
+
+## 8.1 Reproducing the analysis
+
+1. Clone or download the project repository.
+2. Open the RStudio project from the project root.
+3. Obtain the raw dataset from GEO accession GSE288615 and place it in the documented input folder.
+4. Install the required R and Bioconductor packages.
+5. Execute the analysis scripts in their documented order, using the existing stage-specific scripts and checking their input/output paths.
+6. Knit this R Markdown file to generate the HTML report.
+
+The complete pipeline runner may not execute every later analysis stage. Follow the stage-specific scripts and their documented order. Do not assume that running `00_run_all.R` alone reproduces all downstream results.
+
+The raw dataset may not be included in the repository because of file size. Users should obtain it from the original GEO source. Generated result files and figures are stored under `results/`.
+
+## 8.2 Session information
+
+The following output records the R and package environment used to render this report.
+
+```{r session-info}
+sessionInfo()
+```
+
+# 9. References
+
+1. NCBI Gene Expression Omnibus. GSE288615. Rice (*Oryza sativa*) RNA-seq expression dataset.
+2. Love, M. I., Huber, W., and Anders, S. (2014). Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2. *Genome Biology*, 15, 550.
+3. R Core Team. *R: A Language and Environment for Statistical Computing*. R Foundation for Statistical Computing.
+4. Bioconductor. DESeq2 package documentation.
+5. Michigan State University Rice Genome Annotation Project. Rice genome annotation resources.
