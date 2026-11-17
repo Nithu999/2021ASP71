@@ -1,108 +1,274 @@
-# 🌾 CropStress Intelligence
+# CropStress Intelligence
+### An RNA-seq Analysis of Rice Responses to Drought Stress and Rehydration
 
-### An Agricultural Genomics Platform for Understanding Rice Responses to Environmental Stress
+## 1. Abstract
 
-## 1. Project Overview
+CropStress Intelligence is a bioinformatics project investigating gene-expression patterns associated with drought stress and subsequent rehydration in rice (*Oryza sativa*). The project analyses publicly available RNA-sequencing data from the IR64 cultivar using R and established statistical methods. The workflow includes dataset acquisition, metadata integration, quality control, exploratory data analysis, expression filtering, gene-identifier investigation and differential expression analysis using DESeq2. The dataset contains 72 samples and 55,986 original expression records. Preliminary filtering retained 21,910 records. Eight differential expression comparisons were conducted across two leaf tissues and four experimental conditions. A low-count sample was also investigated through sensitivity analysis. Biological interpretation remains limited because the complete mapping between expression records and validated gene identifiers has not been established.
 
-**CropStress Intelligence** is a bioinformatics project focused on analysing rice gene-expression data to investigate how plants respond to environmental stress, particularly severe drought and subsequent rehydration.
+## 2. Introduction
 
-The project uses publicly available RNA-sequencing data to explore gene-expression patterns, assess sample quality, investigate gene annotations, and prepare the data for downstream differential expression analysis.
+Rice is an important food crop, and environmental stresses such as drought can affect its growth and productivity. Understanding how plants respond to drought and recover after water becomes available again is important for agricultural research.
 
-The long-term vision is to develop this work into an agricultural genomics platform that can support data-driven crop research and contribute to agricultural innovation, including applications relevant to Sri Lanka.
+RNA sequencing (RNA-seq) provides a way to investigate gene-expression patterns under different experimental conditions. By comparing expression counts between treatment and control samples, researchers can identify features showing statistically significant expression differences.
 
-## 2. Project Objectives
+This project, CropStress Intelligence, uses publicly available rice RNA-seq data to investigate expression changes during severe drought and subsequent rehydration.
 
-- Analyse rice RNA-sequencing data associated with drought stress and rehydration.
-- Extract and integrate experimental sample metadata.
-- Assess RNA-seq sample quality and identify potential outliers.
-- Investigate gene identifiers and available genome annotations.
-- Perform exploratory data analysis.
-- Apply preliminary gene-expression filtering.
-- Prepare validated data for future differential expression analysis.
+### 2.1 Aim
+
+To analyse rice RNA-seq expression data and identify expression patterns associated with drought stress and rehydration using reproducible bioinformatics methods in R.
+
+### 2.2 Objectives
+
+1. Obtain and inspect a publicly available rice RNA-seq dataset.
+2. Extract and integrate sample metadata with the expression matrix.
+3. Perform sample-level quality control and expression-data validation.
+4. Conduct exploratory data analysis and preliminary expression filtering.
+5. Investigate gene identifiers and annotation compatibility.
+6. Perform differential expression analysis using DESeq2.
+7. Investigate the influence of an unusually low-count sample.
+8. Document the workflow and results for reproducibility.
 
 ## 3. Dataset Description
 
-This project uses the public dataset **GSE288615**, obtained from the NCBI Gene Expression Omnibus (GEO).
+The project uses dataset GSE288615 from the NCBI Gene Expression Omnibus (GEO).
 
-| Attribute                   | Description                        |
-| --------------------------- | ---------------------------------- |
-| Dataset ID                  | GSE288615                          |
-| Organism                    | _Oryza sativa_                     |
-| Cultivar                    | IR64                               |
-| Data type                   | RNA-seq raw counts                 |
-| Number of samples           | 72                                 |
-| Original expression records | 55,986                             |
-| Tissue types                | Latest leaf and second latest leaf |
-| Experimental focus          | Severe drought and rehydration     |
-
-The dataset includes control, severe drought, and rehydration-related experimental conditions.
-
-## 4. Technologies and Tools
-
-- **R** – Bioinformatics data processing and statistical analysis.
-- **RStudio** – Development environment.
-- **Git and GitHub** – Version control and project management.
-- **NCBI GEO** – Public gene-expression dataset source.
-- **MSU Rice Genome Annotation** – Gene annotation investigation.
-
-## 5. Project Workflow
-
-The project follows an organised R-based workflow.
-
-| Stage | Analysis                                                                                       |
-| ----- | ---------------------------------------------------------------------------------------------- |
-| 01    | Extract dataset metadata                                                                       |
-| 02    | Import raw RNA-seq count data                                                                  |
-| 03    | Integrate sample metadata                                                                      |
-| 04    | Perform sample quality control                                                                 |
-| 05    | Investigate gene identifiers                                                                   |
-| 06    | Investigate gene annotations                                                                   |
-| 07    | Perform exploratory data analysis                                                              |
-| 08    | Apply preliminary gene-expression filtering                                                    |
-| 09–10 | Prepare and validate differential expression inputs                                            |
-| 11–17 | Investigate original identifiers, annotation compatibility, and supplementary gene identifiers |
-
-The individual analysis scripts are maintained in the `code/` directory.
-
-## 6. Preliminary Expression Filtering Results
-
-A preliminary expression filter was applied using the following criteria:
-
-- Minimum raw count: 10
-- Minimum number of samples meeting the threshold: 3
-
-| Metric                      | Result |
-| --------------------------- | -----: |
+| Attribute | Description |
+|---|---|
+| Dataset accession | GSE288615 |
+| Organism | *Oryza sativa* |
+| Cultivar | IR64 |
+| Data type | RNA-seq raw expression counts |
+| Number of samples | 72 |
 | Original expression records | 55,986 |
-| Retained records            | 21,910 |
-| Removed records             | 34,076 |
-| Retention percentage        | 39.13% |
+| Reference genome reported | IRGSP-1.0 |
+| Analysis environment | R 4.6.2 |
 
-The resulting filtered expression matrix contains 21,910 records across 72 samples.
+The dataset includes severe drought, control and rehydration conditions. Samples were collected at different time points and from two leaf positions:
 
-This is a preliminary filtering step and does not represent completed differential expression analysis.
+- Latest leaf
+- Second latest leaf
 
-## 7. Gene Annotation Investigation
+The integrated sample metadata contains GEO accession, library name, cultivar, tissue, treatment, day, replicate and title.
 
-The project investigates the compatibility of the original expression data with available rice genome annotation resources.
+The expression matrix and sample metadata were checked to ensure that sample identifiers corresponded correctly.
 
-The MSU Rice Genome Annotation GFF3 file was examined.
+## 4. Methodology
 
-A comparison identified that all 588 gene identifiers extracted from supplementary Table S2 were present in the investigated GFF3 annotation.
+The project was implemented in R using a staged bioinformatics workflow.
 
-However, the original count matrix does not contain an explicit gene identifier column. Therefore, the correspondence between individual count-matrix rows and the GFF3 gene identifiers has not yet been established.
+### 4.1 Data Import and Metadata Integration
 
-Gene identifiers have not been assigned to the complete count matrix based solely on row order.
+The original expression matrix was imported from the GEO dataset. GEO sample information was extracted and organised into a structured metadata table.
 
-## 8. Sample Quality Control
+The count matrix contained 55,986 expression records across 72 samples. Metadata integration was validated by checking sample identifiers and their ordering.
 
-Sample quality assessment was performed using library-size and expression-related statistics.
+### 4.2 Sample Quality Control
 
-One sample, `IR9AD2L1`, was identified with an unusually low library size and requires further investigation.
+Sample-level quality control included:
 
-The sample has not been automatically removed from the dataset.
+- Total library-size calculation.
+- Number of detected expression records.
+- Count-distribution inspection.
+- Biological replicate comparison.
+- Identification of unusually low-count samples.
 
-## 9. Repository Structure
+One sample, `IR9AD2L1`, was identified as an unusual observation.
+
+Its library size was 1,755 compared with the dataset median of 13,707,163. It contained 1,046 detected records and approximately 98.13% zero counts.
+
+The sample was flagged for investigation rather than automatically removed.
+
+### 4.3 Exploratory Data Analysis
+
+Exploratory analysis was performed to understand the dataset structure and expression-count distribution.
+
+The workflow included:
+
+- Experimental-group distribution.
+- Sample library-size distribution.
+- Detected-record comparison.
+- Expression-count statistics.
+- Biological replicate inspection.
+
+### 4.4 Expression Filtering
+
+A preliminary expression filter was applied to reduce the number of low-expression records.
+
+The filtering rule retained records with a raw count of at least 10 in at least three samples.
+
+| Metric | Result |
+|---|---:|
+| Original records | 55,986 |
+| Retained records | 21,910 |
+| Removed records | 34,076 |
+| Retention percentage | 39.13% |
+
+The resulting filtered matrix contained 21,910 records across 72 samples.
+
+This was a preliminary filtering step before differential expression analysis.
+
+### 4.5 Gene Identifier Investigation
+
+The original count matrix did not contain an explicit biological gene-identifier column.
+
+A separate annotation investigation examined the available MSU7 GFF3 annotation file. It contained 55,986 gene records and 55,986 unique identifiers.
+
+However, the matching number of records does not establish that the annotation identifiers correspond row-by-row to the original count matrix.
+
+The study metadata reports the use of the IRGSP-1.0 reference genome, while the investigated GFF3 annotation represents MSU7.
+
+A supplementary spreadsheet containing 588 gene identifiers was also investigated. All 588 identifiers matched the examined GFF3 identifier set.
+
+This supports compatibility for those supplementary identifiers but does not establish a complete mapping for all 55,986 original expression records.
+
+Consequently, technical feature identifiers were used in the differential expression analysis. Biological gene identities were not assumed from row order.
+
+### 4.6 Differential Expression Analysis
+
+Differential expression analysis was performed using the DESeq2 package.
+
+The analysis used:
+
+- Design formula: `~ condition`
+- Size-factor estimation: `poscounts`
+- Statistical significance threshold: adjusted p-value (FDR) < 0.05
+- Additional effect-size threshold: absolute log2 fold change >= 1
+
+Eight separate comparisons were conducted across the two leaf tissues.
+
+The comparisons were:
+
+1. Severe drought Day 6
+2. Severe drought Day 9
+3. Rehydration Day 3
+4. Rehydration Day 6
+
+Each original comparison contained three control and three treatment samples.
+
+The analyses were conducted separately rather than combining different experimental conditions.
+
+## 5. Results
+
+### 5.1 Differential Expression Results
+
+The number of statistically significant expression features varied across experimental conditions and leaf tissues.
+
+| Comparison | Tissue | Significant features (FDR < 0.05) | FDR < 0.05 and abs(log2FC) >= 1 |
+|---|---|---:|---:|
+| Severe drought Day 6 | Latest leaf | 2,183 | 609 |
+| Severe drought Day 9 | Latest leaf | 37 | 37 |
+| Rehydration Day 3 | Latest leaf | 1 | 1 |
+| Rehydration Day 6 | Latest leaf | 60 | 39 |
+| Severe drought Day 6 | Second latest leaf | 811 | 447 |
+| Severe drought Day 9 | Second latest leaf | 1,099 | 568 |
+| Rehydration Day 3 | Second latest leaf | 7 | 6 |
+| Rehydration Day 6 | Second latest leaf | 821 | 299 |
+
+These results demonstrate differences in the number of significant expression features across the comparisons.
+
+They represent statistical findings at the expression-feature level, not confirmed biological gene-level discoveries.
+
+### 5.2 Differential Expression Visualisations
+
+MA plots and volcano plots were generated for the eight comparisons.
+
+They provide visual summaries of expression changes and statistical significance.
+
+Example figures:
+
+**Severe drought — Day 6 — Latest leaf**
+
+![Severe drought Day 6 latest leaf volcano plot](results/figures/differential_expression/severe_drought__day_6__latest_leaf_volcano.png)
+
+![Severe drought Day 6 latest leaf MA plot](results/figures/differential_expression/severe_drought__day_6__latest_leaf_MA.png)
+
+**Severe drought — Day 9 — Latest leaf**
+
+![Severe drought Day 9 latest leaf volcano plot](results/figures/differential_expression/severe_drought__day_9__latest_leaf_volcano.png)
+
+![Severe drought Day 9 latest leaf MA plot](results/figures/differential_expression/severe_drought__day_9__latest_leaf_MA.png)
+
+All generated MA and volcano plots are available in `results/figures/differential_expression/`.
+
+### 5.3 Missing Adjusted P-value Investigation
+
+Some differential expression result files contained missing adjusted p-values.
+
+A diagnostic investigation examined DESeq2 independent filtering and Cook's distance handling.
+
+The investigation showed that independent filtering accounted for most missing adjusted p-values in the severe drought Day 9 latest-leaf and Day 6 second-latest-leaf comparisons.
+
+The original DESeq2 settings were preserved. Alternative settings were used for diagnostic comparison only and did not replace the primary results.
+
+### 5.4 Outlier Sensitivity Analysis
+
+The unusually low-count sample `IR9AD2L1` was investigated further using the severe drought Day 9 latest-leaf comparison.
+
+Two analyses were compared:
+
+| Metric | Original analysis | Without outlier |
+|---|---:|---:|
+| Total samples | 6 | 5 |
+| Control samples | 3 | 3 |
+| Treatment samples | 3 | 2 |
+| Features tested | 18,700 | 18,700 |
+| Significant features | 37 | 1,014 |
+
+The significant-feature overlap was:
+
+| Result | Number |
+|---|---:|
+| Significant in original analysis | 37 |
+| Significant without outlier | 1,014 |
+| Significant in both analyses | 37 |
+| Only significant in original analysis | 0 |
+| Only significant without outlier | 977 |
+
+All 37 features significant in the original analysis remained significant in the sensitivity analysis.
+
+However, excluding the sample reduced the treatment group to two replicates. The additional findings are therefore exploratory and should not be considered independently confirmed discoveries.
+
+The original analysis containing all six samples remains the primary analysis.
+
+## 6. Discussion
+
+The analysis demonstrates a complete progression from RNA-seq data preparation and quality assessment to preliminary filtering and statistical differential expression testing.
+
+The number of significant features differed considerably between drought and rehydration comparisons and between leaf positions. This suggests that expression responses may vary across experimental conditions and sampled tissues.
+
+The low-count sample investigation also demonstrates the importance of sample quality assessment before interpreting differential expression results. The sensitivity analysis showed that the Day 9 latest-leaf comparison was particularly affected by the inclusion of this sample.
+
+However, the results must be interpreted cautiously. The complete biological gene-identifier mapping has not been validated. Therefore, the analysis cannot currently identify specific genes or assign biological functions to the significant expression features.
+
+Further work should establish the correct reference annotation and row-level mapping before conducting gene-specific functional interpretation.
+
+## 7. Limitations
+
+The project has several limitations:
+
+1. The complete mapping between the original expression records and biological gene identifiers has not been validated.
+2. The investigated MSU7 annotation cannot be assumed to match the IRGSP-1.0 count-generation reference.
+3. Differential expression results currently use technical feature identifiers.
+4. The low-count sample affects the severe drought Day 9 latest-leaf comparison.
+5. The sensitivity analysis contains only two treatment replicates after excluding the unusual sample.
+6. Missing adjusted p-values occur in some comparisons because of DESeq2 filtering and outlier handling.
+7. Gene-specific biological interpretation and functional enrichment analysis require validated gene identifiers.
+
+## 8. Conclusion
+
+CropStress Intelligence developed a reproducible R-based workflow for analysing rice RNA-seq data associated with drought stress and rehydration.
+
+The project integrated 72 samples, validated the expression matrix, performed quality control, retained 21,910 records after preliminary filtering and conducted eight DESeq2 comparisons.
+
+The analysis identified statistically significant expression features across several experimental conditions. It also demonstrated the importance of investigating unusual samples through sensitivity analysis rather than automatically removing them.
+
+The most important remaining challenge is validating the complete biological gene-identifier mapping. Addressing this limitation would allow future work to investigate specific drought-responsive genes and their biological functions.
+
+## 9. Reproducibility and Project Structure
+
+The project was developed using R 4.6.2, RStudio, Git and GitHub.
+
+Main project structure:
 
 ```text
 CropStress_Intelligence/
@@ -114,12 +280,7 @@ CropStress_Intelligence/
 │   ├── 03_integrate_metadata.R
 │   ├── 04_sample_quality_control.R
 │   ├── 05_gene_identifier_inspection.R
-│   ├── 06_gene_annotation_inspection.R
-│   ├── 07_exploratory_data_analysis.R
-│   ├── 08_gene_expression_filtering.R
-│   ├── 09_prepare_differential_expression.R
-│   ├── 10_validate_differential_expression_inputs.R
-│   └── ... additional investigation scripts
+│   └── ...
 │
 ├── data/
 │   ├── raw/
@@ -128,61 +289,34 @@ CropStress_Intelligence/
 ├── references/
 │
 ├── reports/
+│   ├── dataset_and_methodology.md
+│   ├── exploratory_data_analysis.md
+│   ├── gene_annotation_investigation.md
+│   ├── quality_control_and_filtering.md
+│   └── differential_expression_analysis.md
 │
-├── results/
-│   ├── figures/
-│   └── tables/
-│
-├── CropStress_Intelligence.Rproj
-├── .gitignore
-└── README.md
+└── results/
+    ├── figures/
+    └── tables/
 ```
 
-## 10. Reports and Outputs
+### Reproducing the Analysis
 
-The repository contains:
+1. Clone or download the project repository.
+2. Open the RStudio project from the project root directory.
+3. Ensure the required raw dataset and reference files are available in their expected folders.
+4. Install the required R packages, including DESeq2.
+5. Execute the analysis scripts in their documented workflow order.
+6. Inspect the generated tables, figures and reports.
 
-- Dataset and methodology documentation.
-- Initial sample quality control report.
-- Quality control and filtering documentation.
-- Exploratory data analysis figures.
-- Gene-expression statistics and filtering summaries.
-- Integrated sample metadata.
-- Gene annotation investigation results.
-- Supplementary gene identifier comparison results.
+The raw dataset is not necessarily distributed with the repository. Users should obtain it from the original GEO accession and place it in the expected project directory.
 
-## 11. Current Limitations and Future Work
+Generated statistical results, figures and documentation are organised under `results/` and `reports/`.
 
-The following tasks remain for further development:
+## 10. References
 
-1. Establish reliable gene identifier mapping for the original count matrix.
-2. Investigate the unusually low-count sample.
-3. Complete differential expression analysis using an appropriate statistical method.
-4. Perform biological interpretation of differentially expressed genes.
-5. Investigate relevant biological pathways and drought-response mechanisms.
-
-**Important:** Differential expression analysis and biological interpretation have not yet been completed.
-
-## 12. Reproducibility
-
-The project is organised into individual R scripts to support transparent and reproducible analysis.
-
-To work with the project:
-
-1. Clone or download this repository.
-2. Open `CropStress_Intelligence.Rproj` in RStudio.
-3. Ensure the required raw dataset and reference files are available in their respective directories.
-4. Set the project root as the working directory.
-5. Run the relevant scripts in the intended workflow order.
-
-The `00_run_all.R` script executes the initial seven workflow stages. Later filtering and investigation scripts are maintained separately and should be executed as required.
-
-## 13. Research Data Source
-
-**NCBI Gene Expression Omnibus (GEO):** GSE288615
-
-Dataset: Public rice RNA-seq expression data for drought and rehydration-related research.
-
----
-
-_CropStress Intelligence – Exploring Agricultural Genomics Through Bioinformatics._
+1. NCBI Gene Expression Omnibus. Dataset GSE288615. Rice (*Oryza sativa*) RNA-seq expression dataset.
+2. Love, M. I., Huber, W., and Anders, S. (2014). Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2. *Genome Biology*, 15, 550.
+3. R Core Team. R: A Language and Environment for Statistical Computing.
+4. Bioconductor. DESeq2 package documentation.
+5. MSU Rice Genome Annotation Project. Rice genome annotation resources.

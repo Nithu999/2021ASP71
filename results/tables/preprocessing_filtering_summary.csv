@@ -1,0 +1,2 @@
+"original_records","retained_records","removed_records","retention_percentage","filtering_rule","samples_retained"
+55986,21910,34076,39.13,"Raw count >= 10 in at least 3 of 72 samples",72

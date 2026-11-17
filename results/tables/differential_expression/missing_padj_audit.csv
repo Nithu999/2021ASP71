@@ -1,0 +1,9 @@
+"comparison","total_features","missing_pvalue","available_pvalue","missing_padj","missing_padj_with_available_pvalue","missing_padj_with_missing_pvalue","missing_padj_percentage"
+"rehydration__day_3__latest_leaf_DESeq2_results.csv",18941,15,18926,15,0,15,0.08
+"rehydration__day_3__second_latest_leaf_DESeq2_results.csv",20024,9,20015,9,0,9,0.04
+"rehydration__day_6__latest_leaf_DESeq2_results.csv",18556,3,18553,3,0,3,0.02
+"rehydration__day_6__second_latest_leaf_DESeq2_results.csv",19553,1,19552,1,0,1,0.01
+"severe_drought__day_6__latest_leaf_DESeq2_results.csv",18994,0,18994,0,0,0,0
+"severe_drought__day_6__second_latest_leaf_DESeq2_results.csv",19338,8,19330,758,750,8,3.92
+"severe_drought__day_9__latest_leaf_DESeq2_results.csv",18700,5,18695,9791,9786,5,52.36
+"severe_drought__day_9__second_latest_leaf_DESeq2_results.csv",19244,3,19241,3,0,3,0.02

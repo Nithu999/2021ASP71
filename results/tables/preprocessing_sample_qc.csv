@@ -1,0 +1,73 @@
+"library_name","geo_accession","cultivar","tissue","treatment","day","replicate","title","library_size","detected_records","zero_count_records","zero_count_percentage","robust_library_size_z","low_library_flag"
+"IR0C1L1","GSM8771207","IR64","latest leaf","control (severe drought)","0",1,"IR64, latest leaf, control (severe drought), Day 0, rep 1",14779426,25647,30339,54.19,0.328788118034157,FALSE
+"IR0C1L2","GSM8771208","IR64","second latest leaf","control (severe drought)","0",1,"IR64, second latest leaf, control (severe drought), Day 0, rep 1",11915536,25744,30242,54.017,-0.611370183923112,FALSE
+"IR0C2L1","GSM8771209","IR64","latest leaf","control (severe drought)","0",2,"IR64, latest leaf, control (severe drought), Day 0, rep 2",14966617,26197,29789,53.208,0.38372461015341,FALSE
+"IR0C2L2","GSM8771210","IR64","second latest leaf","control (severe drought)","0",2,"IR64, second latest leaf, control (severe drought), Day 0, rep 2",11230086,25582,30404,54.306,-0.869973068321937,FALSE
+"IR0C3L1","GSM8771211","IR64","latest leaf","control (severe drought)","0",3,"IR64, latest leaf, control (severe drought), Day 0, rep 3",10680942,25051,30935,55.255,-1.0888066019372,FALSE
+"IR0C3L2","GSM8771212","IR64","second latest leaf","control (severe drought)","0",3,"IR64, second latest leaf, control (severe drought), Day 0, rep 3",11892303,25952,30034,53.646,-0.619889110637431,FALSE
+"IR0D1L1","GSM8771213","IR64","latest leaf","severe drought","0",1,"IR64, latest leaf, severe drought, Day 0, rep 1",17050364,26537,29449,52.601,0.952680179069303,FALSE
+"IR0D1L2","GSM8771214","IR64","second latest leaf","severe drought","0",1,"IR64, second latest leaf, severe drought, Day 0, rep 1",7523706,24366,31620,56.478,-2.61826001391119,FALSE
+"IR0D2L1","GSM8771215","IR64","latest leaf","severe drought","0",2,"IR64, latest leaf, severe drought, Day 0, rep 2",12777590,25740,30246,54.024,-0.306486380227905,FALSE
+"IR0D2L2","GSM8771216","IR64","second latest leaf","severe drought","0",2,"IR64, second latest leaf, severe drought, Day 0, rep 2",9638804,25206,30780,54.978,-1.53691966388264,FALSE
+"IR0D3L1","GSM8771217","IR64","latest leaf","severe drought","0",3,"IR64, latest leaf, severe drought, Day 0, rep 3",17186082,26678,29308,52.349,0.987286105446466,FALSE
+"IR0D3L2","GSM8771218","IR64","second latest leaf","severe drought","0",3,"IR64, second latest leaf, severe drought, Day 0, rep 3",11994410,25810,30176,53.899,-0.582572585250608,FALSE
+"IR12C1L1","GSM8771219","IR64","latest leaf","control (rehydration)","3",1,"IR64, latest leaf, control (rehydration), Day 3, rep 1",12833080,25530,30456,54.399,-0.287571922571116,FALSE
+"IR12C1L2","GSM8771220","IR64","second latest leaf","control (rehydration)","3",1,"IR64, second latest leaf, control (rehydration), Day 3, rep 1",16017937,27229,28757,51.365,0.680041122578416,FALSE
+"IR12C2L1","GSM8771221","IR64","latest leaf","control (rehydration)","3",2,"IR64, latest leaf, control (rehydration), Day 3, rep 2",15518002,26613,29373,52.465,0.541638732625753,FALSE
+"IR12C2L2","GSM8771222","IR64","second latest leaf","control (rehydration)","3",2,"IR64, second latest leaf, control (rehydration), Day 3, rep 2",12931792,25975,30011,53.604,-0.25412597414086,FALSE
+"IR12C3L1","GSM8771223","IR64","latest leaf","control (rehydration)","3",3,"IR64, latest leaf, control (rehydration), Day 3, rep 3",12666145,26176,29810,53.245,-0.344723214704097,FALSE
+"IR12C3L2","GSM8771224","IR64","second latest leaf","control (rehydration)","3",3,"IR64, second latest leaf, control (rehydration), Day 3, rep 3",21024878,28607,27379,48.903,1.86726860319273,FALSE
+"IR12D1L1","GSM8771225","IR64","latest leaf","rehydration after severe drought","3",1,"IR64, latest leaf, rehydration after severe drought, Day 3, rep 1",12690095,25958,30028,53.635,-0.336477653455946,FALSE
+"IR12D1L2","GSM8771226","IR64","second latest leaf","rehydration after severe drought","3",1,"IR64, second latest leaf, rehydration after severe drought, Day 3, rep 1",17567579,27878,28108,50.205,1.08311741883039,FALSE
+"IR12D2L1","GSM8771227","IR64","latest leaf","rehydration after severe drought","3",2,"IR64, latest leaf, rehydration after severe drought, Day 3, rep 2",18420454,26557,29429,52.565,1.29004006706394,FALSE
+"IR12D2L2","GSM8771228","IR64","second latest leaf","rehydration after severe drought","3",2,"IR64, second latest leaf, rehydration after severe drought, Day 3, rep 2",17603663,26761,29225,52.201,1.09207367590034,FALSE
+"IR12D3L1","GSM8771229","IR64","latest leaf","rehydration after severe drought","3",3,"IR64, latest leaf, rehydration after severe drought, Day 3, rep 3",12009799,25556,30430,54.353,-0.576976008183229,FALSE
+"IR12D3L2","GSM8771230","IR64","second latest leaf","rehydration after severe drought","3",3,"IR64, second latest leaf, rehydration after severe drought, Day 3, rep 3",22292210,28114,27872,49.784,2.12274720916601,FALSE
+"IR15C1L1","GSM8771231","IR64","latest leaf","control (rehydration)","6",1,"IR64, latest leaf, control (rehydration), Day 6, rep 1",16256100,27056,28930,51.674,0.744462248649714,FALSE
+"IR15C1L2","GSM8771232","IR64","second latest leaf","control (rehydration)","6",1,"IR64, second latest leaf, control (rehydration), Day 6, rep 1",20229451,27897,28089,50.171,1.69892986945582,FALSE
+"IR15C2L1","GSM8771233","IR64","latest leaf","control (rehydration)","6",2,"IR64, latest leaf, control (rehydration), Day 6, rep 2",12795710,25955,30031,53.64,-0.300300935627737,FALSE
+"IR15C2L2","GSM8771234","IR64","second latest leaf","control (rehydration)","6",2,"IR64, second latest leaf, control (rehydration), Day 6, rep 2",13649749,26588,29398,52.51,-0.0182827786269194,FALSE
+"IR15C3L1","GSM8771235","IR64","latest leaf","control (rehydration)","6",3,"IR64, latest leaf, control (rehydration), Day 6, rep 3",10843457,25940,30046,53.667,-1.02289375052519,FALSE
+"IR15C3L2","GSM8771236","IR64","second latest leaf","control (rehydration)","6",3,"IR64, second latest leaf, control (rehydration), Day 6, rep 3",18018005,27979,28007,50.025,1.1936198867847,FALSE
+"IR15D1L1","GSM8771237","IR64","latest leaf","rehydration after severe drought","6",1,"IR64, latest leaf, rehydration after severe drought, Day 6, rep 1",9837790,24401,31585,56.416,-1.4477280441502,FALSE
+"IR15D1L2","GSM8771238","IR64","second latest leaf","rehydration after severe drought","6",1,"IR64, second latest leaf, rehydration after severe drought, Day 6, rep 1",19441017,26947,29039,51.868,1.52540783099498,FALSE
+"IR15D2L1","GSM8771239","IR64","latest leaf","rehydration after severe drought","6",2,"IR64, latest leaf, rehydration after severe drought, Day 6, rep 2",9756287,24951,31035,55.434,-1.48404008998739,FALSE
+"IR15D2L2","GSM8771240","IR64","second latest leaf","rehydration after severe drought","6",2,"IR64, second latest leaf, rehydration after severe drought, Day 6, rep 2",12252011,25885,30101,53.765,-0.489822210516052,FALSE
+"IR15D3L1","GSM8771241","IR64","latest leaf","rehydration after severe drought","6",3,"IR64, latest leaf, rehydration after severe drought, Day 6, rep 3",8170546,24148,31838,56.868,-2.25826062264583,FALSE
+"IR15D3L2","GSM8771242","IR64","second latest leaf","rehydration after severe drought","6",3,"IR64, second latest leaf, rehydration after severe drought, Day 6, rep 3",11835987,25820,30166,53.881,-0.640607958576373,FALSE
+"IR6C1L1","GSM8771243","IR64","latest leaf","control (severe drought)","6",1,"IR64, latest leaf, control (severe drought), Day 6, rep 1",15415692,25930,30056,53.685,0.512766038369985,FALSE
+"IR6C1L2","GSM8771244","IR64","second latest leaf","control (severe drought)","6",1,"IR64, second latest leaf, control (severe drought), Day 6, rep 1",12536021,26251,29735,53.111,-0.389796874797984,FALSE
+"IR6C2L1","GSM8771245","IR64","latest leaf","control (severe drought)","6",2,"IR64, latest leaf, control (severe drought), Day 6, rep 2",14263350,26248,29738,53.117,0.173649226912979,FALSE
+"IR6C2L2","GSM8771246","IR64","second latest leaf","control (severe drought)","6",2,"IR64, second latest leaf, control (severe drought), Day 6, rep 2",12385983,25969,30017,53.615,-0.442352956704511,FALSE
+"IR6C3L1","GSM8771247","IR64","latest leaf","control (severe drought)","6",3,"IR64, latest leaf, control (severe drought), Day 6, rep 3",9906493,25049,30937,55.258,-1.41735169920616,FALSE
+"IR6C3L2","GSM8771248","IR64","second latest leaf","control (severe drought)","6",3,"IR64, second latest leaf, control (severe drought), Day 6, rep 3",8075275,25442,30544,54.556,-2.30945514170634,FALSE
+"IR6D1L1","GSM8771249","IR64","latest leaf","severe drought","6",1,"IR64, latest leaf, severe drought, Day 6, rep 1",13392221,26601,29385,52.486,-0.101420609045687,FALSE
+"IR6D1L2","GSM8771250","IR64","second latest leaf","severe drought","6",1,"IR64, second latest leaf, severe drought, Day 6, rep 1",14729825,27394,28592,51.07,0.314114673195855,FALSE
+"IR6D2L1","GSM8771251","IR64","latest leaf","severe drought","6",2,"IR64, latest leaf, severe drought, Day 6, rep 2",13764577,26573,29413,52.536,0.0182827786269194,FALSE
+"IR6D2L2","GSM8771252","IR64","second latest leaf","severe drought","6",2,"IR64, second latest leaf, severe drought, Day 6, rep 2",15617927,27309,28677,51.222,0.56965519192382,FALSE
+"IR6D3L1","GSM8771253","IR64","latest leaf","severe drought","6",3,"IR64, latest leaf, severe drought, Day 6, rep 3",9787155,25718,30268,54.064,-1.47025190100371,FALSE
+"IR6D3L2","GSM8771254","IR64","second latest leaf","severe drought","6",3,"IR64, second latest leaf, severe drought, Day 6, rep 3",14572745,27157,28829,51.493,0.267317591667362,FALSE
+"IR9AC1L1","GSM8771255","IR64","latest leaf","control (severe drought)","9",1,"IR64, latest leaf, control (severe drought), Day 9, rep 1",20249158,26991,28995,51.79,1.70317992298189,FALSE
+"IR9AC1L2","GSM8771256","IR64","second latest leaf","control (severe drought)","9",1,"IR64, second latest leaf, control (severe drought), Day 9, rep 1",24192248,28021,27965,49.95,2.47977003559739,FALSE
+"IR9AC2L1","GSM8771257","IR64","latest leaf","control (severe drought)","9",2,"IR64, latest leaf, control (severe drought), Day 9, rep 2",7979997,24103,31883,56.948,-2.36126107377427,FALSE
+"IR9AC2L2","GSM8771258","IR64","second latest leaf","control (severe drought)","9",2,"IR64, second latest leaf, control (severe drought), Day 9, rep 2",11750759,25838,30148,53.849,-0.67215187300568,FALSE
+"IR9AC3L1","GSM8771259","IR64","latest leaf","control (severe drought)","9",3,"IR64, latest leaf, control (severe drought), Day 9, rep 3",15428825,25819,30167,53.883,0.516482977298308,FALSE
+"IR9AC3L2","GSM8771260","IR64","second latest leaf","control (severe drought)","9",3,"IR64, second latest leaf, control (severe drought), Day 9, rep 3",16006156,26494,29492,52.677,0.676829645947511,FALSE
+"IR9AD1L1","GSM8771261","IR64","latest leaf","severe drought","9",1,"IR64, latest leaf, severe drought, Day 9, rep 1",18122395,26504,29482,52.66,1.2188353284336,FALSE
+"IR9AD1L2","GSM8771262","IR64","second latest leaf","severe drought","9",1,"IR64, second latest leaf, severe drought, Day 9, rep 1",18247276,27065,28921,51.658,1.24881025521402,FALSE
+"IR9AD2L1","GSM8771263","IR64","latest leaf","severe drought","9",2,"IR64, latest leaf, severe drought, Day 9, rep 2",1755,1046,54940,98.132,-39.1230167753654,TRUE
+"IR9AD2L2","GSM8771264","IR64","second latest leaf","severe drought","9",2,"IR64, second latest leaf, severe drought, Day 9, rep 2",13077792,25963,30023,53.626,-0.205122887105389,FALSE
+"IR9AD3L1","GSM8771265","IR64","latest leaf","severe drought","9",3,"IR64, latest leaf, severe drought, Day 9, rep 3",22131076,27599,28387,50.704,2.09108232953713,FALSE
+"IR9AD3L2","GSM8771266","IR64","second latest leaf","severe drought","9",3,"IR64, second latest leaf, severe drought, Day 9, rep 3",13991029,26406,29580,52.835,0.0895081155468302,FALSE
+"IR9BC1L1","GSM8771267","IR64","latest leaf","control (rehydration)","0 (2h)",1,"IR64, latest leaf, control (rehydration), Day 0 (2h), rep 1",13860345,25853,30133,53.822,0.0485463742957377,FALSE
+"IR9BC1L2","GSM8771268","IR64","second latest leaf","control (rehydration)","0 (2h)",1,"IR64, second latest leaf, control (rehydration), Day 0 (2h), rep 1",13416370,26357,29629,52.922,-0.0935569493880469,FALSE
+"IR9BC2L1","GSM8771269","IR64","latest leaf","control (rehydration)","0 (2h)",2,"IR64, latest leaf, control (rehydration), Day 0 (2h), rep 2",6370914,23964,32022,57.196,-3.34420411543005,FALSE
+"IR9BC2L2","GSM8771270","IR64","second latest leaf","control (rehydration)","0 (2h)",2,"IR64, second latest leaf, control (rehydration), Day 0 (2h), rep 2",23026735,28027,27959,49.939,2.26424975483535,FALSE
+"IR9BC3L1","GSM8771271","IR64","latest leaf","control (rehydration)","0 (2h)",3,"IR64, latest leaf, control (rehydration), Day 0 (2h), rep 3",12636816,25779,30207,53.955,-0.354841933639066,FALSE
+"IR9BC3L2","GSM8771272","IR64","second latest leaf","control (rehydration)","0 (2h)",3,"IR64, second latest leaf, control (rehydration), Day 0 (2h), rep 3",19848449,28129,27857,49.757,1.615938140843,FALSE
+"IR9BD1L1","GSM8771273","IR64","latest leaf","rehydration after severe drought","0 (2h)",1,"IR64, latest leaf, rehydration after severe drought, Day 0 (2h), rep 1",15638011,26887,29099,51.975,0.57526460166795,FALSE
+"IR9BD1L2","GSM8771274","IR64","second latest leaf","rehydration after severe drought","0 (2h)",1,"IR64, second latest leaf, rehydration after severe drought, Day 0 (2h), rep 1",13829269,26353,29633,52.929,0.0387490423587281,FALSE
+"IR9BD2L1","GSM8771275","IR64","latest leaf","rehydration after severe drought","0 (2h)",2,"IR64, latest leaf, rehydration after severe drought, Day 0 (2h), rep 2",16044548,26396,29590,52.852,0.687286542222929,FALSE
+"IR9BD2L2","GSM8771276","IR64","second latest leaf","rehydration after severe drought","0 (2h)",2,"IR64, second latest leaf, rehydration after severe drought, Day 0 (2h), rep 2",13272072,26099,29887,53.383,-0.140756813789344,FALSE
+"IR9BD3L1","GSM8771277","IR64","latest leaf","rehydration after severe drought","0 (2h)",3,"IR64, latest leaf, rehydration after severe drought, Day 0 (2h), rep 3",17353730,26657,29329,52.386,1.02965832820559,FALSE
+"IR9BD3L2","GSM8771278","IR64","second latest leaf","rehydration after severe drought","0 (2h)",3,"IR64, second latest leaf, rehydration after severe drought, Day 0 (2h), rep 3",12573306,26076,29910,53.424,-0.376834074724786,FALSE
