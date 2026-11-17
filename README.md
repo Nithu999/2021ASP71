@@ -1,92 +1,37 @@
-# CropStress Intelligence
+# CropStress Intelligence — organized R workflow
 
-### Agricultural Genomics Platform
-
-## Project Overview
-
-CropStress Intelligence is an agricultural genomics project focused on analysing gene-expression patterns associated with crop stress responses.
-
-This project uses publicly available rice RNA-sequencing data to investigate gene-expression changes during drought stress and subsequent recovery.
-
-The long-term vision is to develop a research-support platform that helps agricultural researchers explore crop stress responses using genomic data.
-
-## Research Dataset
-
-- **Source:** NCBI Gene Expression Omnibus (GEO)
-- **Dataset:** GSE288615
-- **Organism:** Rice (_Oryza sativa_)
-- **Cultivar:** IR64
-- **Technology:** RNA sequencing (RNA-seq)
-- **Samples:** 72
-- **Expression records:** 55,986
-- **Reference genome:** IRGSP-1.0
-
-## Technologies
-
-- R
-- RStudio
-- Git and GitHub
-- R Markdown
-- ggplot2 (planned, if used in subsequent analyses)
-
-## Current Progress
-
-### Dataset Preparation
-
-- Public GEO dataset selected and imported.
-- GEO sample metadata extracted and integrated.
-- Sample identifiers validated against the count matrix.
-- Initial count-matrix validation completed.
-
-### Quality Assessment
-
-- Sample-level library sizes calculated.
-- Number of detected expression records calculated.
-- Library-size distribution visualised.
-- Potential low-count sample identified: `IR9AD2L1`.
-- Biological replicate comparison performed.
-- Relative library size investigated.
-- Count distribution investigated.
-- Potential sample-level count anomaly documented.
-
-### Research Documentation
-
-- Initial dataset metadata documentation prepared.
-- R Markdown report created.
-- Quality-control tables and visualisations generated.
-
-**Important:** The identified sample has not been excluded. Further investigation is required before making any exclusion decision.
-
-## Project Structure
+## Folder layout
 
 ```text
 CropStress_Intelligence/
-│
 ├── code/
+│   ├── 00_run_all.R
+│   ├── 01_extract_metadata.R
+│   ├── 02_import_counts.R
+│   ├── 03_integrate_metadata.R
+│   ├── 04_sample_quality_control.R
+│   └── 05_gene_identifier_inspection.R
 ├── data/
-│   ├── raw/
-│   └── processed/
-│
+│   └── raw/
 ├── references/
-├── reports/
-│
 └── results/
     ├── figures/
     └── tables/
 ```
 
-## Project Status
+## How to use
 
-Currently in the dataset validation and initial RNA-seq quality assessment stage.
+1. Copy the files from this `code/` folder into your project's existing `code/` folder.
+2. Keep the raw count file in `data/raw/`.
+3. Open the RStudio project so the project root is the working directory.
+4. Open and run `code/00_run_all.R`.
 
-The next stages will focus on:
+The scripts run in sequence and share objects in the same R environment. Run the main runner, not the individual stages out of order.
 
-1. Investigating potential sample-quality issues.
-2. Validating gene identifiers.
-3. Performing exploratory data analysis.
-4. Applying appropriate normalization and filtering.
-5. Preparing for differential gene-expression analysis.
+## Important notes
 
-## Long-Term Vision
-
-Develop CropStress Intelligence into a research-support platform for agricultural genomics, with potential applications in crop stress analysis and agricultural decision support.
+- This is a structural split of the existing `01_dataset_metadata.R` workflow. The original analysis blocks are preserved rather than redesigned.
+- The sample flagged as `IR9AD2L1` is investigated but is not automatically removed.
+- The current gene-identifier inspection checks R row names. If the count file has no gene-ID column, those row names may simply be row numbers. Do not treat them as gene identifiers until the original file format or a matching annotation file confirms this.
+- The workflow still represents dataset preparation and initial quality control. The ICA3 also requires exploratory analysis, at least one suitable main analytical method, interpretation, and a full report. These stages must still be added.
+- Before submission, check that all scripts run from start to finish on your machine and that the results are reproducible.

@@ -1,0 +1,2 @@
+"dataset","organism","cultivar","count_matrix_genes","count_matrix_samples","msu7_gene_records","valid_msu7_gene_ids","unique_msu7_gene_ids","supplementary_gene_ids","matching_supplementary_ids","unmatched_supplementary_ids","matching_percentage","count_annotation_dimensions_match"
+"GSE288615","Oryza sativa","IR64",55986,72,55986,55986,55986,588,588,0,100,TRUE

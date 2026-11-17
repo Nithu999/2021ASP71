@@ -1,0 +1,25 @@
+"treatment","day","tissue","Freq"
+"control (severe drought)","0","latest leaf",3
+"severe drought","0","latest leaf",3
+"control (rehydration)","0 (2h)","latest leaf",3
+"rehydration after severe drought","0 (2h)","latest leaf",3
+"control (rehydration)","3","latest leaf",3
+"rehydration after severe drought","3","latest leaf",3
+"control (rehydration)","6","latest leaf",3
+"control (severe drought)","6","latest leaf",3
+"rehydration after severe drought","6","latest leaf",3
+"severe drought","6","latest leaf",3
+"control (severe drought)","9","latest leaf",3
+"severe drought","9","latest leaf",3
+"control (severe drought)","0","second latest leaf",3
+"severe drought","0","second latest leaf",3
+"control (rehydration)","0 (2h)","second latest leaf",3
+"rehydration after severe drought","0 (2h)","second latest leaf",3
+"control (rehydration)","3","second latest leaf",3
+"rehydration after severe drought","3","second latest leaf",3
+"control (rehydration)","6","second latest leaf",3
+"control (severe drought)","6","second latest leaf",3
+"rehydration after severe drought","6","second latest leaf",3
+"severe drought","6","second latest leaf",3
+"control (severe drought)","9","second latest leaf",3
+"severe drought","9","second latest leaf",3
